@@ -1,5 +1,14 @@
 var currentUserKey = '';
 var chatKey = '';
+
+document.addEventListener('keydown', function(key) {
+    var keyCode = (window.event) ? key.which : key.keyCode;
+    if (keyCode == 13) {
+        sendMessage();
+
+    }
+})
+
 ///////////////
 function startChat(friendKey, friendName, friendPhoto) {
     var friendList = { friendId: friendKey, userId: currentUserKey };
@@ -35,7 +44,6 @@ function startChat(friendKey, friendName, friendPhoto) {
 
         document.getElementById('messages').innerHTML = '';
 
-        onKeyDown();
         document.getElementById('txtMessage').value = '';
         document.getElementById('txtMessage').focus();
 
@@ -85,16 +93,6 @@ function mostrarChatList() {
 function ocultarChatList() {
     document.getElementById('lado-1').classList.add('d-none', 'd-md-block');
     document.getElementById('lado-2').classList.remove('d-none');
-}
-
-function onKeyDown() {
-    document.addEventListener('keydown', function(key) {
-        var keyCode = (window.event) ? key.which : key.keyCode;
-        if (keyCode == 13) {
-            sendMessage();
-
-        }
-    })
 }
 
 function sendMessage() {

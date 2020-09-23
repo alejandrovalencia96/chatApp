@@ -85,6 +85,7 @@ function LoadChatMessages(chatKey, friendPhoto) {
         chats.forEach(function(data) {
             var chat = data.val();
             var dateTime = chat.dateTime.split(",");
+            console.log(dateTime);
             if (chat.userId !== currentUserKey) {
                 messageDisplay += `<div class="row">
                 <div class="col-2 col-sm-1 col-md-1">

@@ -2,12 +2,12 @@ var currentUserKey = '';
 var chatKey = '';
 
 document.addEventListener('keydown', function(key) {
+    var txtMessage = document.getElementById('txtMessage').value;
     var keyCode = (window.event) ? key.which : key.keyCode;
-    if (keyCode == 13) {
+    if (keyCode == 13 && txtMessage !== '') {
         sendMessage();
-
     }
-})
+});
 
 ///////////////
 //Emoji

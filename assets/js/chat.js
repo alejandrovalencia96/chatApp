@@ -10,6 +10,30 @@ document.addEventListener('keydown', function(key) {
 })
 
 ///////////////
+//Emoji
+loadAllEmoji();
+
+function loadAllEmoji() {
+    var emoji = '';
+    for (var i = 128512; i <= 128567; i++) {
+        emoji += `<a href="#" onclick="getEmoji(this)" style="font-size:22px;">&#${i};</a>`;
+    }
+    document.getElementById('smiley').innerHTML = emoji;
+}
+
+function showEmojiPanel() {
+    document.getElementById('emoji').removeAttribute('style');
+}
+
+function hideEmojiPanel() {
+    document.getElementById('emoji').setAttribute('style', 'display:none;');
+}
+
+function getEmoji(control) {
+    document.getElementById('txtMessage').value += control.innerHTML;
+}
+
+///////////////
 function startChat(friendKey, friendName, friendPhoto) {
     var friendList = { friendId: friendKey, userId: currentUserKey };
     var db = firebase.database().ref('friend_list');
@@ -54,6 +78,7 @@ function startChat(friendKey, friendName, friendPhoto) {
 }
 
 function LoadChatMessages(chatKey, friendPhoto) {
+    var userPhoto = document.getElementById('imgProfile').src;
     var db = firebase.database().ref('chatMessages').child(chatKey);
     db.on('value', function(chats) {
         var messageDisplay = '';
@@ -74,15 +99,21 @@ function LoadChatMessages(chatKey, friendPhoto) {
             } else {
                 messageDisplay += `<div class="row justify-content-end"><div class="col-6 col-sm-7 col-md-7"><p class="sent float-right">
                 ${chat.msg}
-                <span class="time float-right" title="${dateTime[0]}">${dateTime[1]}</span></p></div><div class="col-2 col-sm-1 col-md-1"><img src="${firebase.auth().currentUser.photoURL}" class="chat-pic rounded-circle"></div></div>`;
+                <span class="time float-right" title="${dateTime[0]}">${dateTime[1]}</span></p></div><div class="col-2 col-sm-1 col-md-1"><img src="${userPhoto}" class="chat-pic rounded-circle"></div></div>`;
 
 
             }
 
         });
         document.getElementById('messages').innerHTML = messageDisplay;
-        document.getElementById('messages').scrollTo(0, document.getElementById('messages').clientHeight);
+        var myDivMessages = document.getElementById("messages");
+        scroll_to(myDivMessages);
     });
+}
+
+function scroll_to(div) {
+    div.scrollTop = div.scrollHeight - div.clientHeight;
+
 }
 
 function mostrarChatList() {
@@ -105,15 +136,8 @@ function sendMessage() {
         if (error) {
             alert(error);
         } else {
-            // var message = `<div class="row justify-content-end"><div class="col-6 col-sm-7 col-md-7"><p class="sent float-right">
-            // ${document.getElementById('txtMessage').value}
-            // <span class="time float-right">1:28 PM</span></p></div><div class="col-2 col-sm-1 col-md-1"><img src="${firebase.auth().currentUser.photoURL}" class="chat-pic"></div></div>`;
-
-            // document.getElementById('messages').innerHTML += message;
             document.getElementById('txtMessage').value = '';
             document.getElementById('txtMessage').focus();
-
-            // document.getElementById('messages').scrollTo(0, document.getElementById('messages').clientHeight);
         }
     });
 
@@ -126,7 +150,7 @@ function LoadChatList() {
     var db = firebase.database().ref('friend_list');
     db.on('value', function(lists) {
         document.getElementById('lstChat').innerHTML = `<li class="list-group-item" style="background-color:#f8f8f8;">
-        <input type="text" placeholder="Buscar un nuevo chat" class="form-control form-rounded">
+        <input type="text" id="txtChatList placeholder="Buscar un nuevo chat" class="form-control form-rounded">
         </li>`;
         lists.forEach(function(data) {
             var lst = data.val();
@@ -136,7 +160,6 @@ function LoadChatList() {
             } else if (lst.userId === currentUserKey) {
                 friendKey = lst.friendId;
             }
-
             firebase.database().ref('users').child(friendKey).on('value', function(data) {
                 var user = data.val();
                 document.getElementById('lstChat').innerHTML += `<li class="list-group-item list-group-item-action" onclick="startChat('${data.key}', '${user.name}', '${user.photoURL}')">
@@ -146,7 +169,7 @@ function LoadChatList() {
                 </div>
                 <div class="col-md-10" style="cursor:pointer;">
                     <div class="name">${user.name}</div>
-                    <div class="under-name">This is some message text...</div>
+                    <div class="under-name">Ver mensajes...</div>
                 </div>
             </div>
         </li>`;
@@ -193,13 +216,11 @@ function PopulateFriendList() {
 
 }
 
-function signIn() {
-    var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider);
-}
 
 function signOut() {
     firebase.auth().signOut();
+    window.location.href = "login.html";
+
 }
 
 function onFirebaseStateChanged() {
@@ -209,10 +230,17 @@ function onFirebaseStateChanged() {
 function onStateChanged(user) {
     if (user) {
 
+        var avatarURL = new Array("assets/img/avatar.png", "assets/img/avatar2.png", "assets/img/avatar3.png", "assets/img/avatar4.png", "assets/img/avatar5.png");
+        var randomNum = Math.floor(Math.random() * avatarURL.length);
+
+        var email = firebase.auth().currentUser.email;
+        var name = email.split("@");
+
         var userProfile = { email: '', name: '', photoURL: '' };
         userProfile.email = firebase.auth().currentUser.email;
-        userProfile.name = firebase.auth().currentUser.displayName;
-        userProfile.photoURL = firebase.auth().currentUser.photoURL;
+        userProfile.photoURL = avatarURL[randomNum];
+        userProfile.name = name[0];
+
 
         var db = firebase.database().ref('users');
         var flag = false;
@@ -221,6 +249,7 @@ function onStateChanged(user) {
                 var users = data.val();
                 if (users.email === userProfile.email) {
                     currentUserKey = data.key;
+                    document.getElementById('imgProfile').src = users.photoURL;
                     flag = true;
                 }
             });
@@ -228,14 +257,7 @@ function onStateChanged(user) {
             if (flag === false) {
                 firebase.database().ref('users').push(userProfile, callback);
             } else {
-
-                //alert(firebase.auth().currentUser.email + '\n' + firebase.auth().currentUser.displayName);
-                document.getElementById('imgProfile').src = firebase.auth().currentUser.photoURL;
-                document.getElementById('imgProfile').title = firebase.auth().currentUser.displayName;
-
-                document.getElementById('lnkSignIn').style = 'display:none';
                 document.getElementById('lnkSignOut').style = '';
-
             }
 
             document.getElementById('lnkNewChat').classList.remove('disabled');
@@ -245,15 +267,10 @@ function onStateChanged(user) {
 
 
     } else {
-        document.getElementById('imgProfile').src = 'assets/img/avatar.png';
-        document.getElementById('imgProfile').title = '';
-
-        document.getElementById('lnkSignIn').style = '';
-        document.getElementById('lnkSignOut').style = 'display:none';
-
-        document.getElementById('lnkNewChat').classList.add('disabled');
+        window.location.href = "login.html";
     }
 }
+
 
 function callback(error) {
 
@@ -268,5 +285,4 @@ function callback(error) {
 
 //////////
 // Call auth  State changed
-
 onFirebaseStateChanged();

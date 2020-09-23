@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/login.css">
+    <title>Development Pool SAS</title>
+</head>
+
+<body>
+
+    <div class="main-div">
+        <h2 class="text-center">Development Pool SAS</h2>
+        <input type="email" id="email" class="form-control" placeholder="Email..">
+        <input type="password" id="password" class="form-control" placeholder="Password..">
+
+        <div class="btn-group btn-block" role="group" aria-label="Basic example">
+            <button type="button" onclick="signIn()" class="btn btn-outline-primary">Ingresar</button>
+            <button type="button" onclick="signUp()" class="btn btn-outline-success">Registrarte</button>
+        </div>
+    </div>
+
+</body>
+<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-app.js"></script>
+
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-database.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="assets/js/firebase.js"></script>
+<script src="assets/js/login.js"></script>
+
+</html>
